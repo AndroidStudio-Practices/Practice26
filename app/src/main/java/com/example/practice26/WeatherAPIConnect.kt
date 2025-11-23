@@ -25,15 +25,12 @@ suspend fun getWeatherData(city: String): String = withContext(Dispatchers.IO) {
                 parseWeatherJson(response)
             }
             HttpURLConnection.HTTP_NOT_FOUND -> {
-                // Код 404 - город не найден
                 "City '$city' not found"
             }
             HttpURLConnection.HTTP_UNAUTHORIZED -> {
-                // Код 401 - неверный API ключ
                 "Error: Incorrect API key"
             }
             else -> {
-                // Читаем сообщение об ошибке из ответа
                 val errorResponse = connection.errorStream?.bufferedReader()?.use { it.readText() }
                 if (!errorResponse.isNullOrEmpty()) {
                     parseErrorJson(errorResponse)
@@ -62,7 +59,6 @@ private fun parseWeatherJson(json: String): String {
 
 private fun parseErrorJson(json: String): String {
     return try {
-        // Парсим сообщение об ошибке от API
         val message = json.substringAfter("\"message\":\"").substringBefore("\"")
         "API error: $message"
     } catch (e: Exception) {
